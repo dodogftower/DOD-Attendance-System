@@ -1,0 +1,30 @@
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:#e6f0ff; color:#333; }
+.hidden { display: none; }
+header { background:#3399ff; color:white; padding:15px; text-align:center; font-size:1.5em; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+section { padding:15px; max-width:1000px; margin:15px auto; background:white; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.05); }
+h2,h3 { color:#2673cc; margin-bottom:10px; }
+button { background:#3399ff; color:white; border:none; padding:8px 14px; margin:3px 0; cursor:pointer; border-radius:4px; font-size:0.95em; transition: all 0.2s ease-in-out; }
+button:hover { background:#2673cc; }
+input, select { padding:8px 10px; margin:5px 0; border-radius:4px; border:1px solid #3399ff; font-size:0.95em; width:100%; box-sizing:border-box; }
+table { width:100%; border-collapse: collapse; margin-top:15px; font-size:0.95em; }
+th, td { border:1px solid #3399ff; padding:8px; text-align:center; }
+th { background:#3399ff; color:white; }
+tr:nth-child(even) { background:#f0f8ff; }
+tr:hover { background:#cce0ff; }
+#clock { font-weight:bold; font-size:1.2em; margin-left:10px; }
+
+/* OFF DAY RED */
+tr td:first-child { font-weight: bold; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width:768px) {
+    section { padding:10px; margin:10px; }
+    table, th, td { font-size:0.85em; }
+    input, select, button { font-size:0.9em; }
+    table { display:block; overflow-x:auto; white-space:nowrap; }
+}
+@media (max-width:480px) {
+    header { font-size:1.3em; padding:10px; }
+    h2,h3 { font-size:1.1em; }
+    #clock { font-size:1em; }
+}
