@@ -1,217 +1,198 @@
-// ===================== LIVE CLOCK =====================
-function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }
-setInterval(updateClock,1000);
+/* ===============================
+   LIVE DATE & TIME
+================================ */
+function updateDateTime() {
+    const now = new Date();
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const dateEl = document.getElementById("liveDate");
+    const timeEl = document.getElementById("liveTime");
+    if (dateEl) dateEl.innerText = now.toLocaleDateString(undefined, dateOptions);
+    if (timeEl) timeEl.innerText = now.toLocaleTimeString(undefined, timeOptions);
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
 
-// ===================== PAGE NAVIGATION =====================
-function hideAll(){['mainPage','adminLogin','staffLogin','adminDashboard','staffDashboard'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
-function showAdminLogin(){hideAll(); document.getElementById('adminLogin').classList.remove('hidden');}
-function showStaffLogin(){hideAll(); document.getElementById('staffLogin').classList.remove('hidden');}
-function universalLogout(){hideAll(); document.getElementById('mainPage').classList.remove('hidden'); sessionStorage.clear();}
+/* ===============================
+   NAVIGATION & LOGIN
+================================ */
+function goAdminLogin() { window.location.href = "admin-login.html"; }
+function goStaffLogin() { window.location.href = "staff-login.html"; }
+function adminLogout() { window.location.href = "index.html"; }
 
-// ===================== ADMIN LOGIN =====================
-const adminCredentials={user:'admin',pass:'admin123'};
-function adminLogin(){
-    const user=document.getElementById('adminUser').value;
-    const pass=document.getElementById('adminPass').value;
-    if(user===adminCredentials.user && pass===adminCredentials.pass){
-        hideAll(); document.getElementById('adminDashboard').classList.remove('hidden');
-        loadStaffTable(); loadFilterStaff(); loadAttendanceTable();
-    } else alert('Invalid admin credentials');
+function adminLogin() {
+    const userField = document.getElementById("adminUser");
+    const passField = document.getElementById("adminPass");
+    if (userField && passField) {
+        if (userField.value.trim() === "admin" && passField.value.trim() === "admin123") {
+            window.location.href = "admin-dashboard.html";
+        } else { alert("Invalid credentials!"); }
+    }
 }
 
-// ===================== STAFF LOGIN =====================
-function staffLogin(){
-    const id=document.getElementById('loginStaffID').value;
-    const pass=document.getElementById('loginStaffPass').value;
-    const staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    const staff=staffList.find(s=>s.id===id && s.pass===pass);
-    if(staff){
-        sessionStorage.setItem('loggedStaffID',staff.id);
-        sessionStorage.setItem('loggedStaffName',staff.name);
-        hideAll(); document.getElementById('staffDashboard').classList.remove('hidden');
-        document.getElementById('staffWelcome').innerText=`Welcome ${staff.name} (${staff.id})`;
-        displayMyAttendance();
-    } else alert('Invalid staff credentials');
+function staffLogin() {
+    const loginID = document.getElementById("staffLoginID").value.trim();
+    const loginPass = document.getElementById("staffLoginPass").value.trim();
+    const registeredStaff = JSON.parse(localStorage.getItem("staffList")) || [];
+
+    const member = registeredStaff.find(s => s.empID === loginID && s.password === loginPass);
+
+    if (member) {
+        // FIXED: Store both Name and ID to identify unique records
+        localStorage.setItem("currentUser", member.name);
+        localStorage.setItem("currentUserID", member.empID);
+        window.location.href = "staff-dashboard.html";
+    } else {
+        alert("Invalid Employee ID or Password!");
+    }
 }
 
-// ===================== REGISTER STAFF =====================
-function registerStaff(){
-    const name=document.getElementById('staffName').value;
-    const id=document.getElementById('staffID').value;
-    const pass=document.getElementById('staffPassword').value;
-    if(!name || !id || !pass) return alert('Fill all fields');
-    let staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    if(staffList.find(s=>s.id===id)) return alert('Staff ID already exists');
-    staffList.push({name,id,pass});
-    localStorage.setItem('staffList',JSON.stringify(staffList));
-    alert('Staff registered'); loadStaffTable(); loadFilterStaff();
+/* ===============================
+   STAFF ATTENDANCE LOGIC (FIXED)
+================================ */
+
+// Identifies the unique storage key for the logged-in user
+function getStorageKey() {
+    const userID = localStorage.getItem("currentUserID") || "guest";
+    return "attendance_" + userID;
 }
 
-// ===================== STAFF TABLE =====================
-function loadStaffTable(){
-    let staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    let tbody=document.querySelector('#staffTable tbody'); tbody.innerHTML='';
-    staffList.forEach(s=>{
-        let tr=document.createElement('tr');
-        tr.innerHTML=`<td>${s.name}</td><td>${s.id}</td>
-        <td>
-            <button onclick="deleteStaff('${s.id}')">Delete</button>
-            <button onclick="modifyStaff('${s.id}')">Modify</button>
-        </td>`;
+// FIXED: Show Employee ID next to Name
+const welcomeEl = document.getElementById("welcomeStaff");
+if (welcomeEl) {
+    const currentName = localStorage.getItem("currentUser") || "Staff";
+    const currentID = localStorage.getItem("currentUserID") || "";
+    welcomeEl.innerText = `Welcome, ${currentName} (${currentID})`;
+}
+
+function handleInTime() {
+    const key = getStorageKey();
+    let logs = JSON.parse(localStorage.getItem(key)) || [];
+    const dateStr = new Date().toLocaleDateString();
+    const timeStr = new Date().toLocaleTimeString();
+
+    logs.push({ date: dateStr, inTime: timeStr, outTime: null, duration: "Working..." });
+    localStorage.setItem(key, JSON.stringify(logs));
+    displayAttendance();
+}
+
+function handleOutTime() {
+    const key = getStorageKey();
+    let logs = JSON.parse(localStorage.getItem(key)) || [];
+    const lastLog = logs[logs.length - 1];
+
+    if (!lastLog || lastLog.outTime) {
+        alert("Please Check In first!");
+        return;
+    }
+
+    const outTimeStr = new Date().toLocaleTimeString();
+    lastLog.outTime = outTimeStr;
+    lastLog.duration = calculateDuration(lastLog.inTime, outTimeStr);
+    
+    localStorage.setItem(key, JSON.stringify(logs));
+    displayAttendance();
+}
+
+function calculateDuration(start, end) {
+    const s = new Date("01/01/2000 " + start);
+    const e = new Date("01/01/2000 " + end);
+    const diff = new Date(e - s);
+    return `${diff.getUTCHours()}h ${diff.getUTCMinutes()}m`;
+}
+
+function displayAttendance() {
+    const tbody = document.querySelector("#attendanceTable tbody");
+    if (!tbody) return;
+
+    // FIXED: Only display records for the current user key
+    const key = getStorageKey();
+    const logs = JSON.parse(localStorage.getItem(key)) || [];
+    
+    tbody.innerHTML = "";
+    logs.forEach(log => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${log.date}</td><td>${log.inTime}</td><td>${log.outTime || "-"}</td><td>${log.duration}</td>`;
         tbody.appendChild(tr);
     });
 }
 
-function deleteStaff(id){
-    if(!confirm('Delete staff?')) return;
-    let staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    staffList=staffList.filter(s=>s.id!==id);
-    localStorage.setItem('staffList',JSON.stringify(staffList));
-    loadStaffTable(); loadFilterStaff();
+/* ===============================
+   ADMIN STAFF REGISTRATION (SAFE)
+================================ */
+let staffList = JSON.parse(localStorage.getItem("staffList")) || [];
+let editIndex = -1;
+
+function registerStaff() {
+    const name = document.getElementById("staffName").value.trim();
+    const empID = document.getElementById("staffID").value.trim();
+    const role = document.getElementById("staffRole").value.trim();
+    const nic = document.getElementById("staffNIC").value.trim();
+    const contact = document.getElementById("staffContact").value.trim();
+    const password = document.getElementById("staffPassword").value.trim();
+
+    if (!name || !empID || !password) {
+        alert("Please enter Name, Employee ID, and Password");
+        return;
+    }
+
+    const staffData = { name, empID, role, contact, nic, password };
+    if (editIndex === -1) {
+        staffList.push(staffData);
+    } else {
+        staffList[editIndex] = staffData;
+        editIndex = -1;
+        document.getElementById("regBtn").innerText = "Register Staff";
+    }
+
+    localStorage.setItem("staffList", JSON.stringify(staffList));
+    clearInputs();
+    displayStaffList();
 }
 
-function modifyStaff(id){
-    let staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    let staff=staffList.find(s=>s.id===id);
-    let newName=prompt('Enter new name',staff.name);
-    let newPass=prompt('Enter new password',staff.pass);
-    if(newName) staff.name=newName;
-    if(newPass) staff.pass=newPass;
-    localStorage.setItem('staffList',JSON.stringify(staffList));
-    loadStaffTable(); loadFilterStaff();
+function clearInputs() {
+    ["staffName", "staffID", "staffRole", "staffNIC", "staffContact", "staffPassword"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+    });
 }
 
-// ===================== FILTER STAFF FOR ADMIN =====================
-function loadFilterStaff(){
-    let select=document.getElementById('filterStaff');
-    let staffList=JSON.parse(localStorage.getItem('staffList')||'[]');
-    select.innerHTML='<option value="all">All</option>';
-    staffList.forEach(s=>{ select.innerHTML+=`<option value="${s.id}">${s.name}</option>`; });
+function deleteStaff(index) {
+    if (confirm("Delete this staff?")) {
+        staffList.splice(index, 1);
+        localStorage.setItem("staffList", JSON.stringify(staffList));
+        displayStaffList();
+    }
 }
 
-// ===================== MARK ATTENDANCE =====================
-function markIn(){
-    let staffID=sessionStorage.getItem('loggedStaffID');
-    let staffName=sessionStorage.getItem('loggedStaffName');
-    if(!staffID) return alert('Login first');
-    let today=new Date().toLocaleDateString();
-    let floor=document.getElementById('floorSelect').value;
-    let shift=document.getElementById('shiftSelect').value;
-    let inTime=new Date().toLocaleTimeString();
-    let attendanceRecords=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    let existing=attendanceRecords.find(r=>r.staffID===staffID && r.date===today);
-    if(existing && existing.inTime!=='--') return alert('In-Time already marked');
-    if(existing){ existing.inTime=inTime; existing.floor=floor; existing.shift=shift; }
-    else attendanceRecords.push({staffID,staffName,date:today,floor,shift,inTime,outTime:'--',duration:'00:00:00'});
-    localStorage.setItem('attendanceRecords',JSON.stringify(attendanceRecords));
-    displayMyAttendance();
-    document.getElementById('inTimeDisplay').innerText=inTime;
+function modifyStaff(index) {
+    const staff = staffList[index];
+    document.getElementById("staffName").value = staff.name;
+    document.getElementById("staffID").value = staff.empID;
+    document.getElementById("staffRole").value = staff.role;
+    document.getElementById("staffNIC").value = staff.nic;
+    document.getElementById("staffContact").value = staff.contact;
+    document.getElementById("staffPassword").value = staff.password;
+    editIndex = index;
+    document.getElementById("regBtn").innerText = "Update Staff";
 }
 
-function markOut(){
-    let staffID=sessionStorage.getItem('loggedStaffID');
-    let today=new Date().toLocaleDateString();
-    let attendanceRecords=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    let existing=attendanceRecords.find(r=>r.staffID===staffID && r.date===today);
-    if(!existing || existing.inTime==='--') return alert('Mark In-Time first');
-    if(existing.outTime!=='--') return alert('Out-Time already marked');
-    let outTime=new Date();
-    let inTime=new Date(`${today} ${existing.inTime}`);
-    let diffMs=outTime-inTime;
-    let hours=Math.floor(diffMs/1000/3600);
-    let minutes=Math.floor(diffMs/1000/60)%60;
-    let seconds=Math.floor(diffMs/1000)%60;
-    existing.outTime=outTime.toLocaleTimeString();
-    existing.duration=`${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-    localStorage.setItem('attendanceRecords',JSON.stringify(attendanceRecords));
-    displayMyAttendance();
-    document.getElementById('outTimeDisplay').innerText=existing.outTime;
-    document.getElementById('durationDisplay').innerText=existing.duration;
-}
-
-function markOffDay(){
-    let staffID=sessionStorage.getItem('loggedStaffID');
-    let staffName=sessionStorage.getItem('loggedStaffName');
-    if(!staffID) return alert('Login first');
-    let today=new Date().toLocaleDateString();
-    let attendanceRecords=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    let existing=attendanceRecords.find(r=>r.staffID===staffID && r.date===today);
-    if(existing){ existing.floor='OFF'; existing.shift='OFF'; existing.inTime='--'; existing.outTime='--'; existing.duration='--'; }
-    else attendanceRecords.push({staffID,staffName,date:today,floor:'OFF',shift:'OFF',inTime:'--',outTime:'--',duration:'--'});
-    localStorage.setItem('attendanceRecords',JSON.stringify(attendanceRecords));
-    displayMyAttendance();
-    alert('Marked as Off Day');
-}
-
-// ===================== DISPLAY STAFF ATTENDANCE =====================
-function displayMyAttendance(){
-    let staffID=sessionStorage.getItem('loggedStaffID');
-    let attendance=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    let myRecords=attendance.filter(r=>r.staffID===staffID);
-    let tbody=document.querySelector('#myAttendance tbody'); tbody.innerHTML='';
-    myRecords.forEach(r=>{
-        let tr=document.createElement('tr');
-        if(r.floor==='OFF') tr.style.background='#ffcccc';
-        tr.innerHTML=`<td>${r.date}</td><td>${r.floor}</td><td>${r.shift}</td><td>${r.inTime}</td><td>${r.outTime}</td><td>${r.duration}</td>`;
+function displayStaffList() {
+    const tbody = document.querySelector("#staffTable tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    staffList.forEach((staff, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${staff.name}</td><td>${staff.empID}</td><td>${staff.role}</td><td>${staff.contact}</td><td>${staff.nic}</td><td>${staff.password}</td>
+            <td>
+                <button class="btn-modify" onclick="modifyStaff(${index})">Modify</button>
+                <button class="btn-delete" onclick="deleteStaff(${index})">Delete</button>
+            </td>
+        `;
         tbody.appendChild(tr);
     });
 }
 
-// ===================== ADMIN ATTENDANCE VIEW =====================
-function loadAttendanceTable(){ filterAttendance(); }
-function filterAttendance(){
-    let view=document.getElementById('viewType').value;
-    let staffFilter=document.getElementById('filterStaff').value;
-    let dateFilter=document.getElementById('filterDate').value;
-    let attendance=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    if(staffFilter!=='all') attendance=attendance.filter(r=>r.staffID===staffFilter);
-    if(dateFilter) attendance=attendance.filter(r=>r.date===new Date(dateFilter).toLocaleDateString());
-    let tbody=document.querySelector('#attendanceTable tbody'); tbody.innerHTML='';
-    attendance.forEach(r=>{
-        let tr=document.createElement('tr');
-        if(r.floor==='OFF') tr.style.background='#ffcccc';
-        tr.innerHTML=`<td>${r.staffName}</td><td>${r.staffID}</td><td>${r.date}</td><td>${r.floor}</td><td>${r.shift}</td>
-        <td>${r.inTime}</td><td>${r.outTime}</td><td>${r.duration}</td>
-        <td>
-            <button onclick="modifyAttendance('${r.staffID}','${r.date}')">Modify</button>
-            <button onclick="deleteAttendance('${r.staffID}','${r.date}')">Delete</button>
-        </td>`;
-        tbody.appendChild(tr);
-    });
-}
-
-function deleteAttendance(id,date){
-    if(!confirm('Delete this attendance record?')) return;
-    let attendance=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    attendance=attendance.filter(r=>!(r.staffID===id && r.date===date));
-    localStorage.setItem('attendanceRecords',JSON.stringify(attendance));
-    filterAttendance();
-}
-
-function modifyAttendance(id,date){
-    let attendance=JSON.parse(localStorage.getItem('attendanceRecords')||'[]');
-    let record=attendance.find(r=>r.staffID===id && r.date===date);
-    if(!record) return alert('Record not found');
-    let floor=prompt('Floor (29,31,32,33 or OFF)',record.floor);
-    let shift=prompt('Shift (Day/Night or OFF)',record.shift);
-    let inTime=prompt('In-Time (HH:MM:SS or --)',record.inTime);
-    let outTime=prompt('Out-Time (HH:MM:SS or --)',record.outTime);
-
-    record.floor=floor||record.floor;
-    record.shift=shift||record.shift;
-    record.inTime=inTime||record.inTime;
-    record.outTime=outTime||record.outTime;
-
-    if(record.inTime!=='--' && record.outTime!=='--' && record.floor!=='OFF'){
-        let inDate=new Date(`${record.date} ${record.inTime}`);
-        let outDate=new Date(`${record.date} ${record.outTime}`);
-        let diffMs=outDate-inDate;
-        let hours=Math.floor(diffMs/1000/3600);
-        let minutes=Math.floor(diffMs/1000/60)%60;
-        let seconds=Math.floor(diffMs/1000)%60;
-        record.duration=`${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-    } else record.duration='--';
-
-    localStorage.setItem('attendanceRecords',JSON.stringify(attendance));
-    filterAttendance();
-}
+displayStaffList();
+displayAttendance();
