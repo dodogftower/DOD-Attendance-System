@@ -1,30 +1,140 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:#e6f0ff; color:#333; }
-.hidden { display: none; }
-header { background:#3399ff; color:white; padding:15px; text-align:center; font-size:1.5em; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
-section { padding:15px; max-width:1000px; margin:15px auto; background:white; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.05); }
-h2,h3 { color:#2673cc; margin-bottom:10px; }
-button { background:#3399ff; color:white; border:none; padding:8px 14px; margin:3px 0; cursor:pointer; border-radius:4px; font-size:0.95em; transition: all 0.2s ease-in-out; }
-button:hover { background:#2673cc; }
-input, select { padding:8px 10px; margin:5px 0; border-radius:4px; border:1px solid #3399ff; font-size:0.95em; width:100%; box-sizing:border-box; }
-table { width:100%; border-collapse: collapse; margin-top:15px; font-size:0.95em; }
-th, td { border:1px solid #3399ff; padding:8px; text-align:center; }
-th { background:#3399ff; color:white; }
-tr:nth-child(even) { background:#f0f8ff; }
-tr:hover { background:#cce0ff; }
-#clock { font-weight:bold; font-size:1.2em; margin-left:10px; }
-
-/* OFF DAY RED */
-tr td:first-child { font-weight: bold; }
-
-/* MOBILE RESPONSIVE */
-@media (max-width:768px) {
-    section { padding:10px; margin:10px; }
-    table, th, td { font-size:0.85em; }
-    input, select, button { font-size:0.9em; }
-    table { display:block; overflow-x:auto; white-space:nowrap; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
-@media (max-width:480px) {
-    header { font-size:1.3em; padding:10px; }
-    h2,h3 { font-size:1.1em; }
-    #clock { font-size:1em; }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
 }
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.dashboard-card {
+    max-width: 1000px;
+}
+
+h1 { margin-bottom: 10px; }
+p { color: #666; margin-bottom: 20px; }
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover { opacity: 0.9; }
+
+.primary { background: #007bff; color: white; }
+.secondary { background: #28a745; color: white; }
+.warning { background: #ff9800; color: white; }
+
+.btn-modify { background: #ffc107; color: black; padding: 5px 10px; font-size: 12px; width: auto; margin: 2px; }
+.btn-delete { background: #dc3545; color: white; padding: 5px 10px; font-size: 12px; width: auto; margin: 2px; }
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.datetime { margin: 12px 0 20px; text-align: center; }
+.datetime span { display: block; font-size: 14px; color: #555; }
+
+.form-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.form-group input { flex: 1 1 48%; }
+
+.dashboard-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+.dashboard-buttons button { flex: 1; }
+
+/* --- BEAUTIFUL TABLE STYLING --- */
+.table-wrapper { 
+    overflow-x: auto; 
+    margin-top: 20px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background-color: white;
+}
+
+th { 
+    background-color: #f8f9fa; 
+    color: #333; 
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    border-bottom: 3px solid #007bff;
+    padding: 15px 10px;
+    text-align: center;
+}
+
+td { 
+    padding: 12px 10px; 
+    text-align: center; 
+    border-bottom: 1px solid #eee;
+    color: #444;
+    font-size: 14px;
+}
+
+/* --- Updated Date and Time Size --- */
+.datetime { 
+    margin: 15px 0 25px; 
+    text-align: center; 
+    background: #f8f9fa; /* Light background to make it pop */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.datetime span { 
+    display: block; 
+    color: #333; 
+    font-weight: bold; /* Makes it easier to read */
+}
+
+#liveDate {
+    font-size: 22px; /* Large date */
+    margin-bottom: 5px;
+}
+
+#liveTime {
+    font-size: 28px; /* Extra large time */
+    color: #007bff; /* Professional blue color */
+}
+
+/* Zebra striping */
+tbody tr:nth-child(even) { background-color: #fafafa; }
+
+/* Hover row */
+tbody tr:hover { background-color: #f1f7ff; }
