@@ -2,116 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>DOD OGF Attendance System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOD Attendance System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-    DOD Attendance System <span id="clock"></span>
-</header>
+<div class="app">
+    <div class="card">
+        <h1>DOD OGF Attendance System</h1>
 
-<!-- MAIN PAGE -->
-<section id="mainPage">
-    <h2>Welcome</h2>
-    <button onclick="showAdminLogin()">Admin Login</button>
-    <button onclick="showStaffLogin()">Staff Login</button>
-</section>
+        <div class="datetime">
+            <span id="liveDate">Date</span>
+            <span id="liveTime">Time</span>
+        </div>
 
-<!-- ADMIN LOGIN -->
-<section id="adminLogin" class="hidden">
-    <h2>Admin Login</h2>
-    <input type="text" id="adminUser" placeholder="Username"><br>
-    <input type="password" id="adminPass" placeholder="Password"><br>
-    <button onclick="adminLogin()">Login</button>
-    <button onclick="universalLogout()">Back</button>
-</section>
+        <p>Select Login Type</p>
 
-<!-- STAFF LOGIN -->
-<section id="staffLogin" class="hidden">
-    <h2>Staff Login</h2>
-    <input type="text" id="loginStaffID" placeholder="Staff ID"><br>
-    <input type="password" id="loginStaffPass" placeholder="Password"><br>
-    <button onclick="staffLogin()">Login</button>
-    <button onclick="universalLogout()">Back</button>
-</section>
-
-<!-- ADMIN DASHBOARD -->
-<section id="adminDashboard" class="hidden">
-    <h2>Admin Dashboard</h2>
-    <button onclick="universalLogout()">Logout</button>
-
-    <h3>Register Staff</h3>
-    <input type="text" id="staffName" placeholder="Name">
-    <input type="text" id="staffID" placeholder="ID">
-    <input type="password" id="staffPassword" placeholder="Password">
-    <button onclick="registerStaff()">Register</button>
-
-    <h3>Staff Records</h3>
-    <table id="staffTable">
-        <thead>
-            <tr><th>Name</th><th>ID</th><th>Action</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <h3>Attendance Records</h3>
-    Filter Staff: 
-    <select id="filterStaff" onchange="filterAttendance()">
-        <option value="all">All</option>
-    </select>
-    View Type: 
-    <select id="viewType" onchange="filterAttendance()">
-        <option value="daily">Daily</option>
-        <option value="monthly">Monthly</option>
-    </select>
-    Date: <input type="date" id="filterDate" onchange="filterAttendance()">
-    <table id="attendanceTable">
-        <thead>
-            <tr>
-                <th>Name</th><th>ID</th><th>Date</th><th>Floor</th><th>Shift</th>
-                <th>In-Time</th><th>Out-Time</th><th>Duration</th><th>Action</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</section>
-
-<!-- STAFF DASHBOARD -->
-<section id="staffDashboard" class="hidden">
-    <h2>Staff Dashboard</h2>
-    <span id="staffWelcome"></span> | <button onclick="universalLogout()">Logout</button>
-
-    <h3>Mark Attendance</h3>
-    Floor: 
-    <select id="floorSelect">
-        <option value="29">29</option>
-        <option value="31">31</option>
-        <option value="32">32</option>
-        <option value="33">33</option>
-    </select>
-    Shift: 
-    <select id="shiftSelect">
-        <option value="Day">Day</option>
-        <option value="Night">Night</option>
-    </select><br>
-    <button onclick="markIn()">In-Time</button>
-    <button onclick="markOut()">Out-Time</button>
-    <button onclick="markOffDay()">Off Day</button>
-
-    <p>In-Time: <span id="inTimeDisplay">--</span> | Out-Time: <span id="outTimeDisplay">--</span> | Duration: <span id="durationDisplay">00:00:00</span></p>
-
-    <h3>My Attendance Records</h3>
-    <table id="myAttendance">
-        <thead>
-            <tr>
-                <th>Date</th><th>Floor</th><th>Shift</th><th>In-Time</th><th>Out-Time</th><th>Duration</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</section>
+        <button class="btn primary" onclick="goAdminLogin()">Admin Login</button>
+        <button class="btn warning" onclick="goManagementLogin()">Management Login</button>
+        <button class="btn secondary" onclick="goStaffLogin()">Staff Login</button>
+    </div>
+</div>
 
 <script src="script.js"></script>
 </body>
