@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <div class="card dashboard-card">
+        <h1>👤 Admin Dashboard</h1>
+        <div class="datetime">
+            <span id="liveDate">Date</span>
+            <span id="liveTime">Time</span>
+        </div>
+        <p>Welcome, Admin</p>
+        <div class="dashboard-buttons">
+            <button class="btn primary" onclick="viewAttendance()">View Attendance</button>
+            <button class="btn secondary" onclick="exportReports()">Export Reports</button>
+            <button class="btn warning" onclick="adminLogout()">Logout</button>
+        </div>
+        <h2>➕ Register New Staff</h2>
+        <div class="form-group">
+            <input type="text" id="staffName" placeholder="Staff Name">
+            <input type="text" id="staffID" placeholder="Employee ID">
+            <input type="text" id="staffRole" placeholder="Position / Role">
+            <input type="text" id="staffContact" placeholder="Contact Number">
+            <input type="text" id="staffNIC" placeholder="NIC Number" autocomplete="off">
+            <input type="password" id="staffPassword" placeholder="Password" autocomplete="new-password">
+            <button class="btn primary" id="regBtn" onclick="registerStaff()">Register Staff</button>
+        </div>
+        <h3>Registered Staff</h3>
+        <div class="table-wrapper">
+            <table id="staffTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>NIC</th>
+                        <th>Password</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
