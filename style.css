@@ -1,3 +1,6 @@
+/* ==========================================================================
+   ORIGINAL CODE PRESERVED (CORE LOGIC UPDATED FOR MEDIUM BUTTONS)
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -9,7 +12,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    background: linear-gradient(135deg, #01264b, #014c52);
 }
 
 .app {
@@ -31,21 +34,32 @@ body, html {
 }
 
 .dashboard-card {
-    max-width: 1000px;
+    max-width: 1300px;
 }
 
 h1 { margin-bottom: 10px; }
 p { color: #666; margin-bottom: 20px; }
 
+/* FIX: Changed from 100% width to Medium sized professional buttons */
 button {
-    width: 100%;
-    padding: 14px;
+    width: auto;           
+    min-width: 160px;      
+    height: 45px;          
+    padding: 0 25px;
     margin-bottom: 12px;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card:not(.dashboard-card) button {
+    width: 100%;
 }
 
 button:hover { opacity: 0.9; }
@@ -54,8 +68,8 @@ button:hover { opacity: 0.9; }
 .secondary { background: #28a745; color: white; }
 .warning { background: #ff9800; color: white; }
 
-.btn-modify { background: #ffc107; color: black; padding: 5px 10px; font-size: 12px; width: auto; margin: 2px; }
-.btn-delete { background: #dc3545; color: white; padding: 5px 10px; font-size: 12px; width: auto; margin: 2px; }
+.btn-modify { background: #ffc107; color: black; padding: 5px 10px; font-size: 12px; width: auto; min-width: 60px; height: 30px; margin: 2px; }
+.btn-delete { background: #dc3545; color: white; padding: 5px 10px; font-size: 12px; width: auto; min-width: 60px; height: 30px; margin: 2px; }
 
 input {
     width: 100%;
@@ -66,16 +80,23 @@ input {
     font-size: 14px;
 }
 
-.datetime { margin: 12px 0 20px; text-align: center; }
-.datetime span { display: block; font-size: 14px; color: #555; }
+.datetime { 
+    margin: 15px 0 25px; 
+    text-align: center; 
+    background: #f8f9fa; 
+    padding: 10px;
+    border-radius: 10px;
+}
 
-.form-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-.form-group input { flex: 1 1 48%; }
+.datetime span { 
+    display: block; 
+    color: #333; 
+    font-weight: bold; 
+}
 
-.dashboard-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
-.dashboard-buttons button { flex: 1; }
+#liveDate { font-size: 22px; margin-bottom: 5px; }
+#liveTime { font-size: 28px; color: #007bff; }
 
-/* --- BEAUTIFUL TABLE STYLING --- */
 .table-wrapper { 
     overflow-x: auto; 
     margin-top: 20px;
@@ -108,33 +129,271 @@ td {
     font-size: 14px;
 }
 
-/* --- Updated Date and Time Size --- */
-.datetime { 
-    margin: 15px 0 25px; 
-    text-align: center; 
-    background: #f8f9fa; /* Light background to make it pop */
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.datetime span { 
-    display: block; 
-    color: #333; 
-    font-weight: bold; /* Makes it easier to read */
-}
-
-#liveDate {
-    font-size: 22px; /* Large date */
-    margin-bottom: 5px;
-}
-
-#liveTime {
-    font-size: 28px; /* Extra large time */
-    color: #007bff; /* Professional blue color */
-}
-
-/* Zebra striping */
 tbody tr:nth-child(even) { background-color: #fafafa; }
-
-/* Hover row */
 tbody tr:hover { background-color: #f1f7ff; }
+
+/* ==========================================================================
+   1. STATISTICS CARDS (FIXED FOR DASHBOARD CONSISTENCY)
+   ========================================================================== */
+.stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Increased gap */
+    margin: 25px 0;
+    justify-content: center;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 220px; /* Wider for better text spacing */
+    background: white;
+    padding: 25px 15px; /* Increased padding */
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Softer shadow */
+    border-left: 6px solid #3498db; /* Thicker professional border */
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover { transform: translateY(-3px); }
+
+.stat-card h4 { 
+    color: #7f8c8d; 
+    font-size: 0.85rem; 
+    text-transform: uppercase; 
+    margin-bottom: 10px; 
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.stat-card p { 
+    font-size: 2.2rem; /* Matches image 1 larger numbers */
+    font-weight: 800; 
+    color: #2c3e50; 
+    margin: 0; 
+}
+
+/* Specific styling for the Red "On Leave" card as seen in image 1 */
+.stat-card.absent-card {
+    border-left-color: #e74c3c;
+}
+.stat-card.absent-card p {
+    color: #e74c3c;
+}
+
+/* ==========================================================================
+   2. UPDATED RESPONSIVE NAVIGATION MENU (FIXED MOBILE OVERFLOW)
+   ========================================================================== */
+.nav-menu, .dashboard-buttons { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee; 
+}
+
+.nav-item { 
+    cursor: pointer; 
+    padding: 10px 18px; 
+    border-radius: 25px; 
+    font-weight: bold; 
+    color: #7f8c8d; 
+    background: #f8f9fa;
+    transition: 0.3s;
+    font-size: 13px;
+    text-align: center;
+    flex: 1 1 auto; 
+    min-width: 120px; 
+}
+
+.nav-item.active { 
+    background: #007bff; 
+    color: white; 
+}
+
+/* ==========================================================================
+   3. UPDATED FILTER LAYOUT FIX 
+   ========================================================================== */
+.filter-container { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    background: #f1f4f9; 
+    padding: 20px; 
+    border-radius: 12px; 
+    margin-bottom: 20px; 
+    align-items: flex-end; 
+    justify-content: center;
+    overflow: visible; 
+}
+
+.filter-box {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 5px; 
+    flex: 1;
+    min-width: 200px; 
+    position: relative;
+}
+
+.filter-box b, .filter-box strong, .filter-box label {
+    font-size: 13px;
+    color: #007bff; 
+    text-transform: uppercase;
+    white-space: nowrap; 
+    display: flex;
+    align-items: center;
+}
+
+.filter-container input, 
+.filter-container select { 
+    width: 100%;
+    height: 45px; 
+    margin-bottom: 0;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    padding: 0 15px;
+    background-color: white;
+}
+
+/* ==========================================================================
+   4. SNOW SYSTEM
+   ========================================================================== */
+#snow-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -20px;
+    color: white;
+    user-select: none;
+    z-index: 9999;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* ==========================================================================
+   5. UPDATED MEDIUM 3D BUTTONS (DASHBOARD FIX)
+   ========================================================================== */
+.filter-container[style*="background: #eef2f7"] {
+    border-left: 5px solid #28a745; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.filter-container button.secondary, 
+.filter-container button.warning,
+.btn-clear {
+    height: 45px;
+    margin: 0;
+    width: auto;
+    min-width: 160px;
+    display: inline-flex;
+}
+
+.filter-container button.secondary {
+    background: #28a745 !important;
+    box-shadow: 0 4px 0 #1e7e34;
+}
+.filter-container button.secondary:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #1e7e34;
+}
+
+.filter-container button.warning {
+    background: #f39c12 !important;
+    box-shadow: 0 4px 0 #d35400;
+}
+.filter-container button.warning:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #d35400;
+}
+
+.btn-clear {
+    background: #007bff !important;
+    color: white;
+    box-shadow: 0 4px 0 #0056b3;
+}
+.btn-clear:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #0056b3;
+}
+
+/* ==========================================================================
+   NEW FEATURES: LEAVE MANAGEMENT & STATUS STYLING
+   ========================================================================== */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+.status-badge.pending { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.status-badge.approved { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.status-badge.rejected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+.leave-type-label {
+    font-weight: 600;
+    color: #555;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.btn-approve {
+    background: #28a745 !important;
+    color: white;
+    box-shadow: 0 3px 0 #1e7e34;
+    min-width: 80px;
+    height: 35px;
+    font-size: 13px;
+}
+.btn-approve:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e7e34; }
+
+.btn-reject {
+    background: #dc3545 !important;
+    color: white;
+    box-shadow: 0 3px 0 #a71d2a;
+    min-width: 80px;
+    height: 35px;
+    font-size: 13px;
+}
+.btn-reject:active { transform: translateY(2px); box-shadow: 0 1px 0 #a71d2a; }
+
+/* ==========================================================================
+   PRINT & RESPONSIVE (FLEX-WRAP MOBILE UPDATES)
+   ========================================================================== */
+@media print {
+    body { background: white !important; }
+    .card { box-shadow: none !important; border: none; width: 100%; max-width: 100%; }
+    button, .filter-container, .nav-menu, #snow-container { display: none !important; }
+    .table-wrapper { overflow: visible; }
+}
+
+@media (max-width: 992px) {
+    .filter-container { flex-direction: column; align-items: stretch !important; }
+    .filter-box { width: 100%; }
+    .dashboard-buttons { flex-direction: row; flex-wrap: wrap; }
+    button { width: calc(50% - 10px); min-width: 140px; } 
+    .nav-item { min-width: calc(50% - 10px); padding: 8px 10px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+    button { width: 100%; }
+    .nav-item { width: 100%; }
+}
