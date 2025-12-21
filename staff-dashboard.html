@@ -5,6 +5,113 @@
     <title>Staff Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Existing Styles Preserved */
+        .selection-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .selection-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .selection-item label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .selection-item select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            min-width: 100px;
+        }
+        .extra-shift-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff3cd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ffeeba;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #856404;
+            cursor: pointer;
+        }
+        .extra-shift-option input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-greeting {
+            margin: 15px 0;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        #welcomeMessage {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        .btn-off {
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-off:hover { background-color: #7d3c98; }
+
+        .dashboard-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* NEW FEATURE: Leave Request Section Styling */
+        .leave-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+            text-align: left;
+        }
+        .leave-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #eef2f7;
+            padding: 20px;
+            border-radius: 12px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending { background: #ffeaa7; color: #d35400; }
+        .status-approved { background: #55efc4; color: #00b894; }
+        .status-rejected { background: #ff7675; color: #d63031; }
+    </style>
 </head>
 <body>
 
@@ -17,13 +124,85 @@
             <span id="liveTime">Time</span>
         </div>
 
-        <p id="welcomeStaff">Welcome, Staff</p>
+        <div class="user-greeting">
+            <h2 id="welcomeMessage">Welcome, Staff</h2>
+        </div>
+
+        <div class="selection-group">
+            <div class="selection-item">
+                <label for="floorSelect">Floor</label>
+                <select id="floorSelect">
+                    <option value="29">29</option>
+                    <option value="31">31</option>
+                    <option value="32">32</option>
+                    <option value="33">33</option>
+                    <option value="MT28">MT28</option>
+                </select>
+            </div>
+            <div class="selection-item">
+                <label for="shiftSelect">Shift</label>
+                <select id="shiftSelect">
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
+            
+            <label class="extra-shift-option">
+                <input type="checkbox" id="secondShift"> 2nd Shift Today?
+            </label>
+        </div>
 
         <div class="dashboard-buttons">
             <button class="btn primary" id="btnIn" onclick="handleInTime()">In Time</button>
             <button class="btn warning" id="btnOut" onclick="handleOutTime()">Out Time</button>
+            <button class="btn-off" id="btnOff" onclick="handleOffDay()">Off Day</button>
             <button class="btn secondary" onclick="adminLogout()">Logout</button>
         </div>
+
+        <div class="leave-section">
+            <h3>📅 Leave Request (Multi-Day)</h3>
+            <div class="leave-container">
+                <div class="selection-item" style="flex: 1; min-width: 140px;">
+                    <label>Leave Type</label>
+                    <select id="leaveType">
+                        <option value="Sick Leave">Sick Leave</option>
+                        <option value="Marriage Leave">Marriage Leave</option>
+                        <option value="Birthday Leave">Birthday Leave</option>
+                        <option value="Anniversary Leave">Anniversary Leave</option>
+                        <option value="Festival Leave">Festival Leave</option>
+                        <option value="Bereavement Leave">Bereavement Leave</option>
+                        <option value="Personal Leave">Personal leave</option>
+                    </select>
+                </div>
+                <div class="selection-item" style="flex: 1; min-width: 140px;">
+                    <label>Start Date</label>
+                    <input type="date" id="leaveStartDate" style="padding: 7px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
+                </div>
+                <div class="selection-item" style="flex: 1; min-width: 140px;">
+                    <label>End Date</label>
+                    <input type="date" id="leaveEndDate" style="padding: 7px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
+                </div>
+                <button class="btn primary" style="width: auto; margin-bottom: 0;" onclick="submitLeaveRequest()">Request Leave</button>
+            </div>
+            
+            <h4>My Leave Status</h4>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Duration / Date Range</th>
+                            <th>Total Days</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveStatusBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
 
         <h3>Your Attendance History</h3>
         <div class="table-wrapper">
@@ -31,17 +210,113 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Floor</th>
+                        <th>Shift</th>
                         <th>In Time</th>
                         <th>Out Time</th>
                         <th>Duration</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="attendanceBody"></tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
+<script>
+    window.onload = function() {
+        if (typeof updateDateTime === "function") updateDateTime();
+        if (typeof displayAttendance === "function") displayAttendance();
+        if (typeof displayStaffWelcome === "function") displayStaffWelcome();
+        displayLeaveStatus();
+    };
+
+    // UPDATED: Submit Leave Request with Date-to-Date logic
+    function submitLeaveRequest() {
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (!user) return alert("Session error. Please login again.");
+
+        const type = document.getElementById('leaveType').value;
+        const startStr = document.getElementById('leaveStartDate').value;
+        const endStr = document.getElementById('leaveEndDate').value;
+        
+        if(!startStr || !endStr) {
+            alert("Please select both Start and End dates.");
+            return;
+        }
+
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
+
+        if (endDate < startDate) {
+            alert("End date cannot be earlier than start date.");
+            return;
+        }
+
+        // Calculate total days (Inclusive)
+        const diffTime = Math.abs(endDate - startDate);
+        const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        const newRequest = {
+            requestId: "REQ-" + Date.now(),
+            empID: user.empID,
+            staffName: user.name,
+            type: type,
+            startDate: startDate.toLocaleDateString(),
+            endDate: endDate.toLocaleDateString(),
+            totalDays: totalDays,
+            status: "Pending",
+            timestamp: Date.now()
+        };
+
+        // Save to Global list
+        let allRequests = JSON.parse(localStorage.getItem("allLeaveRequests")) || [];
+        allRequests.push(newRequest);
+        localStorage.setItem("allLeaveRequests", JSON.stringify(allRequests));
+        
+        alert(`Leave request for ${type} (${totalDays} days) submitted.`);
+        
+        // Reset fields
+        document.getElementById('leaveStartDate').value = "";
+        document.getElementById('leaveEndDate').value = "";
+        displayLeaveStatus();
+    }
+
+    // UPDATED: Display logic for Multi-day range
+    function displayLeaveStatus() {
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+        const tbody = document.getElementById("leaveStatusBody");
+        if (!tbody || !user) return;
+
+        const allRequests = JSON.parse(localStorage.getItem("allLeaveRequests")) || [];
+        const myRequests = allRequests.filter(req => req.empID === user.empID);
+
+        tbody.innerHTML = "";
+        myRequests.slice().reverse().forEach(req => {
+            let statusClass = "status-pending";
+            if(req.status === "Approved") statusClass = "status-approved";
+            if(req.status === "Rejected") statusClass = "status-rejected";
+
+            // Fallback for old single-date data
+            const dateRangeText = (req.startDate && req.endDate) 
+                ? `${req.startDate} - ${req.endDate}` 
+                : (req.date || "N/A");
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${req.type}</td>
+                    <td style="font-size: 0.9rem;">${dateRangeText}</td>
+                    <td><b>${req.totalDays || 1}</b></td>
+                    <td><span class="status-badge ${statusClass}">${req.status}</span></td>
+                </tr>
+            `;
+        });
+
+        if(myRequests.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:10px; color:#999;'>No leave requests found.</td></tr>";
+        }
+    }
+</script>
 </body>
 </html>
