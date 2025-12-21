@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DOD OGF Attendance System</title>
+    <title>DOD OGF Staff Attendance Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS maintained for other potential card elements */
+    </style>
 </head>
 <body>
 
+<div id="snow-container"></div>
+
 <div class="app">
     <div class="card">
-        <h1>DOD OGF Attendance System</h1>
+        <h1>DOD OGF Staff Attendance Management System</h1>
 
         <div class="datetime">
             <span id="liveDate">Date</span>
@@ -26,5 +31,34 @@
 </div>
 
 <script src="script.js"></script>
+
+<script>
+    /* ==========================================================================
+       ORIGINAL LOGIC PRESERVED & UPDATED FOR NEW FEATURES
+       ========================================================================== */
+    
+    // Updated redirect for Management Login
+    function goManagementLogin() {
+        window.location.href = "management-login.html"; 
+    }
+
+    // Existing Admin and Staff navigation
+    function goAdminLogin() { window.location.href = "admin-login.html"; }
+    function goStaffLogin() { window.location.href = "staff-login.html"; }
+
+    // Run on load
+    window.onload = function() {
+        // Ensure live time starts immediately
+        if (typeof updateDateTime === "function") updateDateTime();
+        
+        /* The script.js handles the snow animation logic.
+           We call createSnowflake on a loop if the function exists.
+        */
+        if (typeof createSnowflake === "function") {
+            setInterval(createSnowflake, 200);
+        }
+    };
+</script>
+
 </body>
 </html>
