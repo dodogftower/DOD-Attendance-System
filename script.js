@@ -99,6 +99,7 @@ function handleInTime() {
     });
     localStorage.setItem(key, JSON.stringify(logs));
     displayAttendance();
+    updateStats(); // Added trigger
 }
 
 function handleOutTime() {
@@ -112,6 +113,7 @@ function handleOutTime() {
         activeLog.duration = calculateDuration(activeLog.inTime, outTimeStr);
         localStorage.setItem(key, JSON.stringify(logs)); 
         displayAttendance();
+        updateStats(); // Added trigger
     } else {
         alert("No active 'In' record found!");
     }
@@ -138,6 +140,7 @@ function handleOffDay() {
     });
     localStorage.setItem(key, JSON.stringify(logs));
     displayAttendance();
+    updateStats(); // Added trigger
 }
 
 function displayAttendance() {
@@ -450,54 +453,50 @@ function deleteAdminLog(empID, index) {
 }
 
 /* ==========================================================================
-   6. STATS CALCULATION (UPDATED: FIXED LEAVE/OFF COUNTING)
+   6. STATS CALCULATION (ENHANCED SYNC FOR ADMIN & MANAGEMENT)
    ========================================================================== */
 function updateStats() {
     const staff = JSON.parse(localStorage.getItem("staffList")) || [];
     const today = new Date().toLocaleDateString();
+    
     let presentCount = 0; 
     let secondShiftCount = 0; 
-    let explicitOffDayCount = 0; 
+    let offDayCount = 0; 
     
     staff.forEach(s => {
         const logs = JSON.parse(localStorage.getItem("attendance_" + s.empID)) || [];
-        // Strictly filter logs for today's date only
         const todayLogs = logs.filter(l => l.date === today);
         
         if (todayLogs.length > 0) {
-            todayLogs.forEach(l => {
-                // Count as Present if inTime is a real clock-in (not OFF/LEAVE)
-                if (l.inTime !== "OFF" && !l.inTime.includes("LEAVE")) {
-                    presentCount++;
-                }
-                // Count as Off/Leave ONLY if record for TODAY specifically says OFF or LEAVE
-                if (l.inTime === "OFF" || l.inTime.includes("LEAVE")) {
-                    explicitOffDayCount++;
-                }
-                // Count Shifts
-                if (l.shift && (l.shift.includes("Night") || l.shift.includes("2nd"))) {
-                    secondShiftCount++;
-                }
-            });
+            // Priority Check: If any log is "Present", count as Present
+            const isPresent = todayLogs.some(l => l.inTime !== "OFF" && !l.inTime.includes("LEAVE"));
+            const isOff = todayLogs.some(l => l.inTime === "OFF" || l.inTime.includes("LEAVE"));
+            
+            if (isPresent) presentCount++;
+            else if (isOff) offDayCount++;
+
+            // Shift Check
+            if (todayLogs.some(l => l.shift && (l.shift.includes("Night") || l.shift.includes("2nd")))) {
+                secondShiftCount++;
+            }
         }
     });
 
-    // Helper to safely set UI elements
     const setUI = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.innerText = val;
     };
 
-    // Management Dashboard
+    // Management Dashboard IDs
     setUI("statTotalStaff", staff.length);
     setUI("statPresent", presentCount);
-    setUI("statAbsent", explicitOffDayCount);
+    setUI("statAbsent", offDayCount);
     setUI("statSecondShift", secondShiftCount);
 
-    // Admin Dashboard
+    // Admin Dashboard IDs (Ensures Admin matches Management)
     setUI("adminStatTotalStaff", staff.length);
     setUI("adminStatPresent", presentCount);
-    setUI("adminStatAbsent", explicitOffDayCount);
+    setUI("adminStatAbsent", offDayCount);
     setUI("adminStatSecondShift", secondShiftCount);
 }
 
@@ -531,7 +530,7 @@ function createSnowflake() {
 }
 
 /* ==========================================================================
-   NEW FEATURES: LEAVE MANAGEMENT LOGIC (UPDATED)
+   8. NEW FEATURES: LEAVE MANAGEMENT LOGIC (ADVANCED SYNC)
    ========================================================================== */
 
 function displayManagementLeaves() {
@@ -579,7 +578,7 @@ function updateLeaveStatus(requestId, newStatus) {
             const attendanceKey = "attendance_" + req.empID;
             let logs = JSON.parse(localStorage.getItem(attendanceKey)) || [];
             
-            // Check if a leave entry for this exact date already exists to prevent double counting
+            // Prevent duplicate leave entries for the same date
             const existingEntry = logs.some(l => l.date === req.date && l.inTime.includes("LEAVE"));
             
             if (!existingEntry) {
@@ -599,12 +598,12 @@ function updateLeaveStatus(requestId, newStatus) {
         alert(`Request ${newStatus} successfully.`);
         displayManagementLeaves();
         if (typeof displayAllAttendance === "function") displayAllAttendance();
-        updateStats(); // Force stat recalculation
+        updateStats(); 
     }
 }
 
 /* ==========================================================================
-   8. INITIALIZE
+   9. INITIALIZE
    ========================================================================== */
 window.onload = function() {
     updateDateTime();
@@ -614,7 +613,11 @@ window.onload = function() {
     displayStaffWelcome();
     displayManagementLeaves(); 
     updateStats();
-    setInterval(createSnowflake, 200);
+    
+    if (document.getElementById('snow-container')) {
+        setInterval(createSnowflake, 200);
+    }
+
     ["filterName", "filterID", "filterSpecificDate", "filterFloor", "filterShift"].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
