@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* New Leave Status Styles */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .pending { background: #fff3cd; color: #856404; }
+        .approved { background: #d4edda; color: #155724; }
+        .rejected { background: #f8d7da; color: #721c24; }
+
+        /* Approval Button Colors */
+        .btn-approve { background-color: #2ecc71 !important; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        .btn-reject { background-color: #e74c3c !important; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="snow-container"></div>
+
+<div class="app">
+    <div class="card dashboard-card">
+        <div class="nav-menu" style="justify-content: space-between; align-items: center;">
+            <div class="nav-item active">Management View (Read-Only)</div>
+            <button class="btn-delete" style="width: auto; margin: 0; background: #e74c3c;" onclick="adminLogout()">Logout</button>
+        </div>
+
+        <h1 style="margin-top: 20px;">Management Report Center</h1>
+        
+        <div class="datetime" style="max-width: 400px; margin: 0 auto 30px; background: #f1f4f9;">
+            <span id="liveDate" style="font-size: 24px; color: #2c3e50;">Date</span>
+            <span id="liveTime" style="font-size: 32px; color: #007bff;">Time</span>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <h4>Total Staff</h4>
+                <p id="statTotalStaff">0</p>
+            </div>
+            <div class="stat-card">
+                <h4>Present Today</h4>
+                <p id="statPresent">0</p>
+            </div>
+            <div class="stat-card" style="border-left: 5px solid #e74c3c;">
+                <h4>On Leave / Off</h4>
+                <p id="statAbsent" style="color: #e74c3c;">0</p>
+            </div>
+            <div class="stat-card">
+                <h4>Night Shift</h4>
+                <p id="statSecondShift">0</p>
+            </div>
+        </div>
+
+        <hr style="margin: 30px 0; opacity: 0.1;">
+
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">Leave Requests (Action Required)</h3>
+        <div class="table-wrapper" style="margin-bottom: 40px; border: 1px solid #e0e6ed;">
+            <table>
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="text-align: left; padding-left: 20px;">STAFF NAME</th>
+                        <th>LEAVE TYPE</th>
+                        <th>DURATION (DAYS)</th> <th>STATUS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="managementLeaveTable">
+                    </tbody>
+            </table>
+        </div>
+
+        <hr style="margin: 30px 0; opacity: 0.1;">
+
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">Attendance History & Search</h3>
+        
+        <div class="filter-container">
+            <input type="text" id="filterName" placeholder="Search by Name...">
+            <input type="text" id="filterID" placeholder="Search by ID...">
+            <div class="date-filter-group" style="flex: 1; min-width: 150px;">
+                <input type="date" id="filterSpecificDate">
+            </div>
+            
+            <select id="filterShift">
+                <option value="All Shifts">All Shifts</option>
+                <option value="Day">Day Shift</option>
+                <option value="Night">Night Shift</option>
+            </select>
+
+            <select id="filterFloor">
+                <option value="">All Floors</option>
+                <option value="29">Floor 29</option>
+                <option value="31">Floor 31</option>
+                <option value="32">Floor 32</option>
+                <option value="33">Floor 33</option>
+                <option value="MT28">Floor MT28</option>
+            </select>
+            <button class="primary" style="width: auto; height: 45px; margin: 0;" onclick="clearFilters()">Reset Filters</button>
+        </div>
+
+        <div class="filter-container" style="background: #eef2f7; border: 1px solid #d1d9e6;">
+            <div style="flex: 2; display: flex; gap: 10px; align-items: center;">
+                <strong>Daily:</strong>
+                <input type="date" id="reportDailyDate">
+                <select id="reportDailyShift">
+                    <option value="All Shifts">All Shifts</option>
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                </select>
+                <button class="secondary" style="width: auto; height: 60px; margin:0;" onclick="generateReport('daily')">Generate Daily Sheet</button>
+            </div>
+            <div style="flex: 1.5; display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
+                <strong>Monthly:</strong>
+                <input type="month" id="reportMonthlyDate">
+                <button class="warning" style="width: auto; height: 55px; margin:0; background: #f39c12;" onclick="generateReport('monthly')">Generate Monthly Sheet</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="adminAttendanceTable">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-left: 20px;">STAFF NAME & ID</th>
+                        <th>DATE</th>
+                        <th>FLOOR</th>
+                        <th>SHIFT</th>
+                        <th>IN TIME</th>
+                        <th>OUT TIME</th>
+                        <th>DURATION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    // UPDATED: Interactive Leave Management with Date-to-Date support
+    function displayManagementLeaves() {
+        const leaveBody = document.getElementById("managementLeaveTable");
+        const allRequests = JSON.parse(localStorage.getItem("allLeaveRequests")) || [];
+        
+        leaveBody.innerHTML = "";
+
+        if (allRequests.length === 0) {
+            leaveBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No leave requests found.</td></tr>";
+            return;
+        }
+
+        allRequests.slice().reverse().forEach((req, index) => {
+            const actualIndex = allRequests.length - 1 - index;
+            const statusClass = req.status.toLowerCase();
+            
+            // Logic to handle single day (old data) vs multi day (new data)
+            const dateDisplay = (req.startDate && req.endDate) 
+                                ? `${req.startDate} to ${req.endDate}` 
+                                : (req.date || "N/A");
+            
+            const totalDays = req.totalDays || 1;
+
+            leaveBody.innerHTML += `
+                <tr>
+                    <td style="text-align: left; padding-left: 20px;">${req.staffName} (ID: ${req.empID})</td>
+                    <td>${req.type}</td>
+                    <td>${dateDisplay} <br> <small>(${totalDays} Day/s)</small></td>
+                    <td><span class="status-badge ${statusClass}">${req.status}</span></td>
+                    <td>
+                        ${req.status === 'Pending' ? `
+                            <button class="btn-approve" onclick="updateLeaveStatus(${actualIndex}, 'Approved')">Approve</button>
+                            <button class="btn-reject" onclick="updateLeaveStatus(${actualIndex}, 'Rejected')">Reject</button>
+                        ` : `<span style="color: #3498db; font-size: 11px; font-weight:bold;">AWAITING ADMIN</span>`}
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateLeaveStatus(index, status) {
+        if(confirm("Confirm set leave request to " + status + "?")) {
+            let allRequests = JSON.parse(localStorage.getItem("allLeaveRequests")) || [];
+            allRequests[index].status = status;
+            localStorage.setItem("allLeaveRequests", JSON.stringify(allRequests));
+            alert("Management has " + status + " the request. Admin can now re-approve or finalize.");
+            displayManagementLeaves(); 
+        }
+    }
+
+    window.onload = function() {
+        if(typeof updateDateTime === "function") updateDateTime();
+        if(typeof displayAllAttendance === "function") displayAllAttendance(); 
+        if(typeof updateStats === "function") updateStats();
+        
+        displayManagementLeaves();
+        
+        if(typeof createSnowflake === "function") setInterval(createSnowflake, 200);
+
+        ["filterName", "filterID", "filterSpecificDate", "filterFloor", "filterShift"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener("input", displayAllAttendance);
+                el.addEventListener("change", displayAllAttendance);
+            }
+        });
+    };
+
+    setInterval(() => {
+        if(typeof updateStats === "function") updateStats();
+    }, 5000);
+</script>
+
+</body>
+</html>
