@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div id="snow-container"></div>
+
+<div class="app">
+    <div class="card">
+        <h1>Management Login</h1>
+        <p>Enter your credentials to access reports</p>
+
+        <div class="datetime">
+            <span id="liveDate">Date</span>
+            <span id="liveTime">Time</span>
+        </div>
+
+        <input type="text" id="manageUser" placeholder="Username">
+        <input type="password" id="managePass" placeholder="Password">
+
+        <button class="warning" onclick="managementLogin()">Login to Dashboard</button>
+        <button class="btn-delete" style="width: 100%; background: #666;" onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    function managementLogin() {
+        const user = document.getElementById("manageUser").value;
+        const pass = document.getElementById("managePass").value;
+        
+        // Updated credentials as requested
+        if (user === "mgmt" && pass === "mgmt123") {
+            // Save a small session flag if needed
+            localStorage.setItem("managementSession", "active");
+            window.location.href = "management-dashboard.html";
+        } else {
+            alert("Invalid Management Credentials!");
+        }
+    }
+
+    window.onload = function() {
+        updateDateTime();
+        setInterval(createSnowflake, 200);
+    };
+</script>
+
+</body>
+</html>
