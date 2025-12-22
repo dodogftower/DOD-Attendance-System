@@ -5,8 +5,45 @@
     <title>Admin Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* NEW FEATURE: Back Button Styling */
+        .btn-back-container {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-back-link {
+            background: #6c757d !important;
+            color: white !important;
+            width: auto;
+            min-width: 120px;
+            height: 35px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .btn-back-link:hover {
+            background: #0091ff !important;
+        }
+
+        /* Styling for the note to match your image */
+        .note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
+
+<div id="snow-container"></div>
 
 <div class="app">
     <div class="card">
@@ -16,11 +53,24 @@
         <input type="text" id="adminUser" placeholder="Username">
         <input type="password" id="adminPass" placeholder="Password">
 
-        <button class="btn primary" onclick="adminLogin()">Login</button>
+        <button class="btn primary" onclick="adminLogin()" style="width: 100%;">Login</button>
+        
         <p class="note">Only authorized admin allowed</p>
+
+        <div class="btn-back-container">
+            <button class="btn-back-link" onclick="window.location.href='index.html'">← Back to Home</button>
+        </div>
     </div>
 </div>
 
 <script src="script.js"></script>
+<script>
+    /* Initialize Snow effect if the function exists in script.js */
+    window.onload = function() {
+        if(typeof createSnowflake === "function") {
+            setInterval(createSnowflake, 200);
+        }
+    };
+</script>
 </body>
 </html>
