@@ -11,14 +11,16 @@
 body, html {
     margin: 0;
     padding: 0;
-    height: 100%;
+    min-height: 100%; /* Changed from height: 100% to allow expansion */
     background: linear-gradient(135deg, #01264b, #014c52);
+    overflow-x: hidden;
+    overflow-y: auto; /* Force vertical scroll availability */
 }
 
 .app {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* FIX: Changed from 'center' to 'flex-start' to allow scrolling */
     min-height: 100vh;
     padding: 20px;
 }
@@ -31,10 +33,15 @@ body, html {
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative !important; /* Force relative to prevent freeze */
 }
 
 .dashboard-card {
     max-width: 1300px;
+    position: relative !important; 
+    top: auto !important;
+    margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 h1 { margin-bottom: 10px; }
@@ -138,20 +145,21 @@ tbody tr:hover { background-color: #f1f7ff; }
 .stats-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Increased gap */
+    gap: 20px; 
     margin: 25px 0;
     justify-content: center;
+    position: relative !important; 
 }
 
 .stat-card {
     flex: 1;
-    min-width: 220px; /* Wider for better text spacing */
+    min-width: 220px; 
     background: white;
-    padding: 25px 15px; /* Increased padding */
+    padding: 25px 15px; 
     border-radius: 12px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Softer shadow */
-    border-left: 6px solid #3498db; /* Thicker professional border */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    border-left: 6px solid #3498db; 
     transition: transform 0.2s ease;
 }
 
@@ -167,13 +175,12 @@ tbody tr:hover { background-color: #f1f7ff; }
 }
 
 .stat-card p { 
-    font-size: 2.2rem; /* Matches image 1 larger numbers */
+    font-size: 2.2rem; 
     font-weight: 800; 
     color: #2c3e50; 
     margin: 0; 
 }
 
-/* Specific styling for the Red "On Leave" card as seen in image 1 */
 .stat-card.absent-card {
     border-left-color: #e74c3c;
 }
@@ -182,7 +189,7 @@ tbody tr:hover { background-color: #f1f7ff; }
 }
 
 /* ==========================================================================
-   2. UPDATED RESPONSIVE NAVIGATION MENU (FIXED MOBILE OVERFLOW)
+   2. UPDATED RESPONSIVE NAVIGATION MENU (UNFROZEN)
    ========================================================================== */
 .nav-menu, .dashboard-buttons { 
     display: flex; 
@@ -192,6 +199,10 @@ tbody tr:hover { background-color: #f1f7ff; }
     margin-bottom: 20px; 
     padding-bottom: 15px;
     border-bottom: 1px solid #eee; 
+    /* FIX: Force relative positioning so it doesn't stick */
+    position: relative !important; 
+    top: auto !important;
+    z-index: 10;
 }
 
 .nav-item { 
