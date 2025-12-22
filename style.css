@@ -11,16 +11,17 @@
 body, html {
     margin: 0;
     padding: 0;
-    min-height: 100%; /* Changed from height: 100% to allow expansion */
+    min-height: 100%; 
     background: linear-gradient(135deg, #01264b, #014c52);
     overflow-x: hidden;
-    overflow-y: auto; /* Force vertical scroll availability */
+    overflow-y: auto; 
 }
 
 .app {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* FIX: Changed from 'center' to 'flex-start' to allow scrolling */
+    /* UPDATE: Changed to center for the home page layout in the image */
+    align-items: center; 
     min-height: 100vh;
     padding: 20px;
 }
@@ -29,11 +30,11 @@ body, html {
     background: white;
     padding: 40px 30px;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px; /* Slightly wider for better text fit */
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    position: relative !important; /* Force relative to prevent freeze */
+    position: relative !important; 
 }
 
 .dashboard-card {
@@ -65,6 +66,8 @@ button {
     justify-content: center;
 }
 
+/* Updated for the Login Buttons stacking on home page */
+.card .login-buttons button,
 .card:not(.dashboard-card) button {
     width: 100%;
 }
@@ -199,7 +202,6 @@ tbody tr:hover { background-color: #f1f7ff; }
     margin-bottom: 20px; 
     padding-bottom: 15px;
     border-bottom: 1px solid #eee; 
-    /* FIX: Force relative positioning so it doesn't stick */
     position: relative !important; 
     top: auto !important;
     z-index: 10;
@@ -225,7 +227,7 @@ tbody tr:hover { background-color: #f1f7ff; }
 }
 
 /* ==========================================================================
-   3. UPDATED FILTER LAYOUT FIX 
+   3. UPDATED FILTER LAYOUT FIX (ALIGNED FOR FRAME)
    ========================================================================== */
 .filter-container { 
     display: flex; 
@@ -237,7 +239,7 @@ tbody tr:hover { background-color: #f1f7ff; }
     margin-bottom: 20px; 
     align-items: flex-end; 
     justify-content: center;
-    overflow: visible; 
+    overflow: hidden; /* FIX: Prevents buttons from spilling out of the white frame */
 }
 
 .filter-box {
@@ -247,6 +249,7 @@ tbody tr:hover { background-color: #f1f7ff; }
     gap: 5px; 
     flex: 1;
     min-width: 200px; 
+    max-width: 100%; /* FIX: Ensures box stays within parent frame */
     position: relative;
 }
 
@@ -297,7 +300,7 @@ tbody tr:hover { background-color: #f1f7ff; }
 }
 
 /* ==========================================================================
-   5. UPDATED MEDIUM 3D BUTTONS (DASHBOARD FIX)
+   5. UPDATED MEDIUM 3D BUTTONS (FRAME FIX FOR GENERATE BUTTONS)
    ========================================================================== */
 .filter-container[style*="background: #eef2f7"] {
     border-left: 5px solid #28a745; 
@@ -308,9 +311,10 @@ tbody tr:hover { background-color: #f1f7ff; }
 .filter-container button.warning,
 .btn-clear {
     height: 45px;
-    margin: 0;
+    margin: 5px 0; /* Updated for spacing */
     width: auto;
     min-width: 160px;
+    max-width: 100%; /* FIX: Prevents buttons from going out of frame */
     display: inline-flex;
 }
 
