@@ -106,22 +106,25 @@
             <button class="primary" style="width: auto; height: 45px; margin: 0;" onclick="clearFilters()">Reset Filters</button>
         </div>
 
-        <div class="filter-container" style="background: #eef2f7; border: 1px solid #d1d9e6;">
-            <div style="flex: 2; display: flex; gap: 10px; align-items: center;">
+        <div class="filter-container" style="background: #eef2f7; border-left: 5px solid #28a745;">
+            <div class="filter-box" style="flex: 2; display: flex; flex-direction: row; gap: 10px; align-items: center; min-width: 250px;">
                 <strong>Daily:</strong>
-                <input type="date" id="reportDailyDate">
-                <select id="reportDailyShift">
+                <input type="date" id="reportDailyDate" style="width: auto;">
+                <select id="reportDailyShift" style="width: auto;">
                     <option value="All Shifts">All Shifts</option>
                     <option value="Day">Day</option>
                     <option value="Night">Night</option>
                 </select>
-                <button class="secondary" style="width: auto; height: 60px; margin:0;" onclick="generateReport('daily')">Generate Daily Sheet</button>
             </div>
-            <div style="flex: 1.5; display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
+            <button class="secondary" onclick="generateReport('daily')">Generate Daily Sheet</button>
+        </div>
+
+        <div class="filter-container" style="background: #fff4e5; border-left: 5px solid #ff9800;">
+            <div class="filter-box" style="flex: 2; display: flex; flex-direction: row; gap: 10px; align-items: center; min-width: 250px;">
                 <strong>Monthly:</strong>
-                <input type="month" id="reportMonthlyDate">
-                <button class="warning" style="width: auto; height: 55px; margin:0; background: #f39c12;" onclick="generateReport('monthly')">Generate Monthly Sheet</button>
+                <input type="month" id="reportMonthlyDate" style="width: auto;">
             </div>
+            <button class="warning" style="background: #f39c12;" onclick="generateReport('monthly')">Generate Monthly Sheet</button>
         </div>
 
         <div class="table-wrapper">
